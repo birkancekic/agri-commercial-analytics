@@ -1,0 +1,27 @@
+// 1. Toplam Ciro ve Kârlılık
+Total Gross Revenue = SUM(fact_commercial_sales[gross_revenue_try])
+
+Total COGS = SUM(fact_commercial_sales[cogs_try])
+
+Total Gross Margin = [Total Gross Revenue] - [Total COGS]
+
+Gross Margin % = 
+DIVIDE([Total Gross Margin], [Total Gross Revenue], 0)
+
+// 2. Fire (Shrinkage) Maliyeti ve Kayıp Oranı
+Total Shrinkage Qty (KG) = SUM(fact_commercial_sales[shrinkage_qty_kg])
+
+Shrinkage Loss (TRY) = 
+SUMX(fact_commercial_sales, fact_commercial_sales[shrinkage_qty_kg] * fact_commercial_sales[unit_cost_try])
+
+Shrinkage Loss Rate % = 
+DIVIDE([Total Shrinkage Qty (KG)], SUM(fact_commercial_sales[dispatched_qty_kg]), 0)
+
+// 3. Kanal Marj Primi (D2C vs B2B Arbitrajı)
+D2C Margin % = 
+CALCULATE([Gross Margin %], fact_commercial_sales[sales_channel] = "D2C - Perakende")
+
+B2B Margin % = 
+CALCULATE([Gross Margin %], fact_commercial_sales[sales_channel] = "B2B - Toptan")
+
+Direct Channel Margin Premium = [D2C Margin %] - [B2B Margin %]
